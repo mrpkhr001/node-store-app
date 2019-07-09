@@ -43,10 +43,10 @@ exports.resize = async (req, res, next) => {
     await photo.write(`./public/uploads/${req.body.photo}`);
     //once we have written the photo to our filesystem, keep going!
     next();
-}
+};
 
 exports.createStore = async (req, res) => {
-
+    req.body.author = req.user._id;
     const store = await (new Store(req.body)).save();
 
     //ES6 Promise way
@@ -67,12 +67,19 @@ exports.createStore = async (req, res) => {
 exports.getStores = async  (req, res) => {
     const stores = await Store.find();
     res.render('stores', {title: 'store', stores});
+};
+
+const confirmOwner = (store, user) => {
+    if(!store.author.equals(user._id)){
+        throw new Error('You must own a store in order to edit it!');
+    }
 }
 
 exports.editStore = async  (req, res) => {
     const store = await Store.findOne({_id : req.params.id});
+    confirmOwner(store, req.user);
     res.render('editStore', {title: `Edit ${store.name}`, store});
-}
+};
 
 exports.updateStore = async  (req, res) => {
     //set the location data to be a point
@@ -84,14 +91,14 @@ exports.updateStore = async  (req, res) => {
         }).exec();
     req.flash('success', `Successfully updated <strong>${store.name}</strong> <a href="/stores/${store.slug}">View Store -></a>`);
     res.redirect(`/stores/${store._id}/edit`);
-}
+};
 
 exports.getStoreBySlug = async(req, res) => {
-    const store = await Store.findOne({slug: req.params.slug});
+    const store = await Store.findOne({slug: req.params.slug}).populate('author');
     if(!store) return next(); // same as if(!store){ next(); return;}
     res.render('store', {store, title: store.name});
 
-}
+};
 
 exports.getStoresByTag = async  (req, res) => {
     const tag = req.params.tag;
@@ -101,4 +108,4 @@ exports.getStoresByTag = async  (req, res) => {
     const [tags, stores] = await Promise.all([tagsPromise, storesPromise]);
 
     res.render('tags', {tags, title: 'Tags', tag, stores});
-}
+};
