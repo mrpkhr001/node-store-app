@@ -126,4 +126,27 @@ exports.searchStores = async (req, res) => {
     //limit to only 5 results
     .limit(5);
     res.json(stores);
-}
+};
+
+exports.mapStores = async ( req, res) => {
+    const coordinates = [req.query.lng, req.query.lat].map(parseFloat);
+
+    const q = {
+        location: {
+            $near: {
+               $geometry:{
+                   type: 'Point',
+                   coordinates: coordinates
+               },
+               $maxDistance: 10000 //10km
+            }
+        }
+    }
+    //provide the property names that are need in .select. if we want some props not needed then .select('-author -tags')
+    const stores = await Store.find(q).select('photo name location slug');
+    res.json(stores);
+};
+
+exports.mapPage = (req, res) => {
+    res.render('map', {title : 'Map'});
+};
