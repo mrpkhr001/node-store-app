@@ -61,6 +61,7 @@ storeSchema.pre('save', async function (next) {
         return;
     }
     this.slug = slug(this.name);
+    // making more resilient so slugs are unique
     //Find other store with same slug
     const slugRegEx = new RegExp(`^(${this.slug})((-[0-9]*$)?)$`, 'i');
     const storeWithSlug = await this.constructor.find({slug: slugRegEx});
@@ -68,7 +69,7 @@ storeSchema.pre('save', async function (next) {
         this.slug = `${this.slug}-${storeWithSlug.length  + 1}`;
     }
     next();
-    // Todo make more resilient so slugs are unique
+
 });
 
 storeSchema.statics.getTagsList = function(){
