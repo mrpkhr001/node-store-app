@@ -42,7 +42,14 @@ const storeSchema = new mongoose.Schema({
         ref: 'User',
         required: 'You must supply an author'
     }
-});
+}
+//Below option instructs serializer to populate the virtual fields like here 'reviews' in to Store object
+// otherwise it will be hidden
+,{
+    toJSON: {virtuals: true},
+    toObject: {virtuals: true}
+}
+);
 
 
 //Indexing on store
@@ -78,6 +85,13 @@ storeSchema.statics.getTagsList = function(){
         {$group: {_id: '$tags', count: {$sum: 1}}},
         {$sort: {count: -1}}
     ]).cursor({}).exec().toArray();
-}
+};
+
+//find reviews where the Stores _id property(below 'localField') === Reviews store property (below foreignField)
+storeSchema.virtual('reviews', {
+    ref: 'Review', //What model to link
+    localField: '_id',  // which field on the store?
+    foreignField: 'store' // which field on the review?
+});
 
 module.exports = mongoose.model('Store', storeSchema);

@@ -97,7 +97,7 @@ exports.updateStore = async  (req, res) => {
 };
 
 exports.getStoreBySlug = async(req, res) => {
-    const store = await Store.findOne({slug: req.params.slug}).populate('author');
+    const store = await Store.findOne({slug: req.params.slug}).populate('author reviews');
     if(!store) return next(); // same as if(!store){ next(); return;}
     res.render('store', {store, title: store.name});
 
@@ -169,4 +169,4 @@ exports.heartStore = async (req, res) => {
         .findByIdAndUpdate(req.user._id, {[operator] : {hearts: req.params.id}}, {new: true});
 
     res.json(user);
-}
+};
