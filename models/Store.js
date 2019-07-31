@@ -87,11 +87,54 @@ storeSchema.statics.getTagsList = function(){
     ]).cursor({}).exec().toArray();
 };
 
+storeSchema.statics.getTopStores = function(){
+    return this.aggregate([
+        // Lookup Stores and populate their reviews
+        {$lookup: {from: 'reviews', localField: '_id', foreignField: 'store', as : 'reviews'} },
+
+        // filter for only items that have 2 or more reviews
+        {$match: {'reviews.1': {$exists: true} } },
+
+        // Add the average reviews field
+        {$addFields: {
+            averageRating: {$avg: '$reviews.rating'}
+        }},
+
+        // $project is older operator like $addFields in version v3.2 mongoDB, from v3.4 onwards $addFields is available
+        // downside of $project is that it pipes output with single new field, to all required fields we need explicitly
+        // like below with $$ROOT ( here we added photo, name, reviews)
+        // {
+        //     $project: {
+        //         photo: '$$ROOT.photo',
+        //         name: '$$ROOT.name',
+        //         reviews: '$$ROOT.reviews',
+        //         averageRating: {$avg: '$reviews.rating'}
+        //     }
+        // }
+
+        // sort it by out rew field, highest reviews first
+        {$sort: {averageRating: -1}},
+
+        // limit to at most 10
+        {$limit: 10}
+    ]).cursor({}).exec().toArray();
+};
+
 //find reviews where the Stores _id property(below 'localField') === Reviews store property (below foreignField)
 storeSchema.virtual('reviews', {
     ref: 'Review', //What model to link
     localField: '_id',  // which field on the store?
     foreignField: 'store' // which field on the review?
 });
+
+function autopopulate(next){
+    this.populate('reviews');
+    next();
+}
+
+storeSchema.pre('find', autopopulate);
+storeSchema.pre('findOne', autopopulate);
+
+
 
 module.exports = mongoose.model('Store', storeSchema);
