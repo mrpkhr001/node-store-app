@@ -1,0 +1,12 @@
+.idea
+node_modules
+*.log
+DS_Store
+
+public/javascripts
+public/sass
+data
+webpack.config.js
+
+variables.env
+variables.env.now
