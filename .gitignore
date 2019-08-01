@@ -2,7 +2,7 @@
 node_modules
 public/dist
 *.log
-DS_Store
+.DS_Store
 
 variables.env
 variables.env.now
