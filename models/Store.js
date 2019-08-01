@@ -84,7 +84,7 @@ storeSchema.statics.getTagsList = function(){
         {$unwind: '$tags'},
         {$group: {_id: '$tags', count: {$sum: 1}}},
         {$sort: {count: -1}}
-    ]).cursor({}).exec().toArray();
+    ]).exec();
 };
 
 storeSchema.statics.getTopStores = function(){
@@ -117,7 +117,7 @@ storeSchema.statics.getTopStores = function(){
 
         // limit to at most 10
         {$limit: 10}
-    ]).cursor({}).exec().toArray();
+    ]).exec();
 };
 
 //find reviews where the Stores _id property(below 'localField') === Reviews store property (below foreignField)
