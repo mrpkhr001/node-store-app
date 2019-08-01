@@ -32,6 +32,10 @@ require('./models/Review');
 // Start our app!
 const app = require('./app');
 app.set('port', process.env.PORT || 7777);
-const server = app.listen(app.get('port'), () => {
-  console.log(`Express running → PORT ${server.address().port}`);
+// const server = app.listen(app.get('port'), () => {
+//   console.log(`Express running → PORT ${server.address().port}`);
+// });
+const server  = require('http').createServer(app);
+server.listen(app.get('port'), () => {
+  console.log(`Http server is running now `);
 });

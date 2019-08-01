@@ -8,35 +8,25 @@
      "MAIL_PASS": "14677252627ff5",
      "MAIL_HOST": "smtp.mailtrap.io",
      "MAIL_PORT": "2525",
-     "PORT": "7777",
+     "PORT": "80",
      "MAP_KEY": "AIzaSyAddwFzEu83xzv_3kQjwLOrK3d35bmiOKg",
      "SECRET": "snickers",
      "KEY": "sweetsesh"
   },
-  "build": {
-    "env": {
-      "NODE_ENV": "production",
-      "DATABASE": "mongodb+srv://storeadmin:store@cluster0-khwiw.mongodb.net?retryWrites=true&w=majority",
-      "DATABASE_NAME": "learn_node_store",
-      "MAIL_USER": "b64b9e3061c870",
-      "MAIL_PASS": "14677252627ff5",
-      "MAIL_HOST": "smtp.mailtrap.io",
-      "MAIL_PORT": "2525",
-      "PORT": "7777",
-      "MAP_KEY": "AIzaSyAddwFzEu83xzv_3kQjwLOrK3d35bmiOKg",
-      "SECRET": "snickers",
-      "KEY": "sweetsesh"
-    }
-  },
   "builds": [
     {
       "src": "start.js",
-      "use": "@now/node"
+      "use": "@now/node",
+      "config": {
+        "includeFiles": [
+          "public/**"
+        ]
+      }
     }
   ],
   "routes": [
     {
-      "src": "/(.*)", "dest": "/"
+      "src": "/(.*)", "dest": "/start.js"
     }
   ]
 }
